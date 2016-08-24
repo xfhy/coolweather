@@ -37,10 +37,18 @@ public class ListViewDB {
 	}
 	
 	/**
+	 * 删除数据库中所有的DayWeather表的信息
+	 */
+	public void deleteAllInfo(){
+		db.delete("DayWeather", null, null);   //存储之前,先删除里面的所有垃圾数据
+	}
+	
+	/**
 	 * 将DayWeather实例存储到数据库
 	 * @param dayWeather
 	 */
 	public void saveDayWeather(DayWeather dayWeather){
+		
 		if(dayWeather != null){
 			ContentValues values = new ContentValues();
 			values.put("day_date", dayWeather.getDayDate());

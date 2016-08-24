@@ -14,6 +14,7 @@ import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -42,37 +43,79 @@ public class ChooseAreaActivity extends Activity {
 	public static final int LEVEL_CITY = 1;
 	public static final int LEVEL_COUNTY = 2;
 
-	private ProgressDialog progressDialog;   //进度对话框
-	private TextView titleText;   //标题
-	private ListView listView;    //ListView组件
-	private ArrayAdapter<String> adapter; //ListView的适配器
-	private CoolWeatherDB coolWeatherDB;  //用来操作数据库的
-	private List<String> dataList = new ArrayList<String>();   //ListView的专用集合数据
+	/**
+	 * 是否从WeatherActivity中跳转过来
+	 */
+	private boolean isFromWeatherActivity;
+	/**
+	 * 进度对话框
+	 */
+	private ProgressDialog progressDialog;  
+	/**
+	 * 标题
+	 */
+	private TextView titleText;  
+	/**
+	 * ListView组件
+	 */
+	private ListView listView;  
+	/**
+	 * ListView的适配器
+	 */
+	private ArrayAdapter<String> adapter; 
+	/**
+	 * 用来操作数据库的
+	 */
+	private CoolWeatherDB coolWeatherDB;  
+	/**
+	 * ListView的专用集合数据
+	 */
+	private List<String> dataList = new ArrayList<String>();   
 
-	// 省列表
+	/**
+	 * 省列表
+	 */
 	private List<Province> provinceList;
-	// 市列表
+	/**
+	 * 市列表
+	 */
 	private List<City> cityList;
-	// 县列表
+	/**
+	 *  县列表
+	 */
 	private List<County> countyList;
-	// 选中的省份
+	/**
+	 *  选中的省份
+	 */
 	private Province selectedProvince;
-	//当前选中的省份在ListView中的位置
+	/**
+	 * 当前选中的省份在ListView中的位置
+	 */
 	private int selecProvinPosition = -1; 
-	// 选中的城市
+	/**
+	 *  选中的城市
+	 */
 	private City selectedCity;
-	//当前选中城市ListView中的位置
+	/**
+	 * 当前选中城市ListView中的位置
+	 */
 	private int selecCityPosition = -1;
-	// 当前选中的级别
+	/**
+	 *  当前选中的级别
+	 */
 	private int currentLevel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		//首先判断是否是从WeatherActivity跳转过来的   默认值是false
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+		
 		//先读取配置文件
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		if(prefs.getBoolean("city_selected", false)){   //如果之前选择过城市,则直接跳过这个活动   直接到显示天气信息的活动
+		//如果之前选择过城市且不是从WeatherActivity跳转过来的,则直接跳过这个活动   直接到显示天气信息的活动
+		if(prefs.getBoolean("city_selected", false) && !isFromWeatherActivity){   
 			Intent intent = new Intent(this,WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -316,8 +359,24 @@ public class ChooseAreaActivity extends Activity {
 		} else if(currentLevel == LEVEL_CITY){
 			queryProvinces();
 		} else {
+			//如果是从WeatherActivity跳转过来的,则按下返回键就跳转到WeatherActivity活动中去
+			if(isFromWeatherActivity){
+				Intent intent = new Intent(this,WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
+	}
+	
+	/**
+	 * 用于其他活动启动当前这个活动     这是启动活动的最佳写法
+	 * @param context    想启动当前活动的活动context
+	 * @param countyCode 县级代号
+	 */
+	public static void actionStart(Context context){
+		Intent intent = new Intent(context,ChooseAreaActivity.class);
+		intent.putExtra("from_weather_activity", true);
+		context.startActivity(intent);
 	}
 	
 }

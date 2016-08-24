@@ -148,6 +148,7 @@ public class Utility {
 			/*---------------------读取未来3天的天气信息------------------*/
 			Calendar cal = Calendar.getInstance();         //实例化Calendar对象    用来获取日期
 			ListViewDB listViewDB = new ListViewDB();      //实例化ListViewDB实例
+			listViewDB.deleteAllInfo();    //存储之前先删除数据库中之前剩下的垃圾数据
 			for (int i = 0; i < 3; i++) { 
 				JSONObject tempJsonObject2 = jsonArray.getJSONObject(i);
 				DayWeather dayWeather = new DayWeather();
@@ -159,16 +160,16 @@ public class Utility {
 				String low = tempJsonObject2.getString("low"); 
 				temp = low.split(" ");
 				low = temp[1];
-				dayWeather.setLowTemp(low);
-				
+				dayWeather.setLowTemp(low);             //最低温度
+				 
 				String high = tempJsonObject2.getString("high");
 				temp = high.split(" ");
 				high = temp[1];
-				dayWeather.setHighTemp(high);
+				dayWeather.setHighTemp(high);            //最高温度
 				
 				listViewDB.saveDayWeather(dayWeather);   // 将DayWeather实例存储到数据库
 			}
-			String cityName = data.getString("city");
+			String cityName = data.getString("city");    //获取当前城市名
 			Log.d("xfhy",cityName);
 			
 			saveWeatherInfo(context, cityName, currentTemp, windDirect, windPower, highTemp, weatherDesp, lowTemp);
@@ -191,8 +192,6 @@ public class Utility {
 			String currentTemp,String windDirect, String windPower, String highTemp, String weatherDesp,
 			String lowTemp) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年M月d日",Locale.CHINA);   //定义日期格式
-		
-		
 		
 		//得到Editor对象,就可以编辑了
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();

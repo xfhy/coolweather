@@ -15,12 +15,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,10 +37,18 @@ import android.widget.Toast;
  * @author XFHY
  * 
  */
-public class WeatherActivity extends Activity {
+public class WeatherActivity extends Activity implements OnClickListener{
 	
 	private LinearLayout weatherInfoLayout;
 	private LinearLayout wendu_layout;
+	/**
+	 * 切换城市按钮
+	 */
+	private Button switchCity;
+	/**
+	 * 更新天气按钮
+	 */
+	private Button refreshWeather;
 	 /**
 	  * 用于显示城市名
 	  */
@@ -86,6 +97,8 @@ public class WeatherActivity extends Activity {
 		//初始化各控件
 		weatherInfoLayout = (LinearLayout)findViewById(R.id.weather_info_layout);
 		wendu_layout = (LinearLayout)findViewById(R.id.wendu_layout);
+		switchCity = (Button)findViewById(R.id.switch_city);
+		refreshWeather = (Button)findViewById(R.id.refresh_weather);
 		cityNameText = (TextView)findViewById(R.id.city_name);
 		currentDateText = (TextView)findViewById(R.id.current_date);
 		currentTemp = (TextView)findViewById(R.id.current_temp);
@@ -95,9 +108,12 @@ public class WeatherActivity extends Activity {
 		lowTempText = (TextView)findViewById(R.id.low_temp);
 		highTempText = (TextView)findViewById(R.id.high_temp);
 		listview = (ListView)findViewById(R.id.weath_listview);
-		/*adapter = new DayWeaAdapter(WeatherActivity.this, R.layout.dayitem, dayWeatherList);
-		listview.setAdapter(adapter);*/
 		
+		//设置按钮监听器
+		switchCity.setOnClickListener(this);
+		refreshWeather.setOnClickListener(this);
+		
+		//获取县级代号    如果有
 		String countyCode = getIntent().getStringExtra("county_code");
 		
 		if(!TextUtils.isEmpty(countyCode)){
@@ -123,8 +139,6 @@ public class WeatherActivity extends Activity {
 	 */
 	private void queryWeatherCode(String countyCode) {
 		String address = "http://www.weather.com.cn/data/list3/city"+countyCode+".xml";
-		Toast.makeText(getApplicationContext(),
-				"查询县级代号所对应的天气代号"+countyCode, Toast.LENGTH_SHORT).show();
 		queryFromServer(address, "countyCode");
 	}
 	
@@ -135,7 +149,7 @@ public class WeatherActivity extends Activity {
 	private void queryWeatherInfo(String weatherCode){
 		
 		String address = "http://wthrcdn.etouch.cn/weather_mini?citykey="+weatherCode;
-		Log.d("xfhy","查询天气代号所对应的天气"+weatherCode);
+		//Log.d("xfhy","查询天气代号所对应的天气"+weatherCode);
 		
 		queryFromServer(address, "weatherCode");
 	}
@@ -164,9 +178,14 @@ public class WeatherActivity extends Activity {
 						if(array != null && array.length == 2){   //服务器的数据是    县级代号|天气代号   县级只有一个信息
 							String weatherCode = array[1];
 							queryWeatherInfo(weatherCode);   //将天气代号传入  查询天气代号所对应的天气
+							SharedPreferences prefs = PreferenceManager.
+									getDefaultSharedPreferences(WeatherActivity.this);
+							Editor editor = prefs.edit();   //得到Editor对象,就可以编辑了
+							editor.putString("weather_code", weatherCode);   //将天气代码保存到SharedPreference文件中
+							editor.commit();    //提交
 						}
 					} 
-				} else if("weatherCode".equals(type)){
+				} else if("weatherCode".equals(type)){   //如果传入的是天气代号
 					//处理服务器返回的天气信息              解析服务器返回的JSON数据,并将解析出来的数据存储到本地      
 					Utility.handleWeatherResponse(WeatherActivity.this, response);
 					
@@ -176,8 +195,6 @@ public class WeatherActivity extends Activity {
 						@Override
 						public void run() {
 							showWeather();
-							Toast.makeText(getApplicationContext(),
-									"更新天气", Toast.LENGTH_SHORT).show();
 						}
 						
 					});
@@ -237,6 +254,30 @@ public class WeatherActivity extends Activity {
 		Intent intent = new Intent(context,WeatherActivity.class);
 		intent.putExtra("county_code", countyCode);
 		context.startActivity(intent);
+	}
+
+	/**
+	 * 实现按钮监听器的方法
+	 */
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.switch_city:  //切换城市
+			ChooseAreaActivity.actionStart(this);  //启动选择城市的活动
+			finish();   //关闭当前活动
+			break;
+		case R.id.refresh_weather:
+			currentDateText.setText("同步中...");
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			String weatherCode = prefs.getString("weather_code", "");  //获取天气代码
+			if(!TextUtils.isEmpty(weatherCode)){
+				queryWeatherInfo(weatherCode);   //查询天气信息
+				Toast.makeText(this, "更新天气成功", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		default:
+			break;
+		}
 	}
 	
 }
