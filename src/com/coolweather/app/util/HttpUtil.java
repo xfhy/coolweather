@@ -9,6 +9,7 @@ import java.net.URL;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -40,9 +41,10 @@ public class HttpUtil {
 		
 		//首先判断一下当前网络是否可以上网  不可以的话,直接不用执行下面的代码(开启线程连接服务器)了
 		if( !isNetworkAvailable() ){
-			Looper.prepare();  //需要调用Looper.prepare()来给线程创建一个消息循环
 			Toast.makeText(MyApplication.getContext(), "无可用网络", Toast.LENGTH_SHORT).show();
-			Looper.loop();     //让Looper开始工作，从消息队列里取消息，处理消息。
+			if( listener != null ){
+				listener.onFinish("当前无可用网络");   //将无可用网络的消息传到主线程去
+			}
 			return ;
 		}
 		
@@ -63,16 +65,18 @@ public class HttpUtil {
 					//将字节流转换成字符流
 					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 					StringBuffer response = new StringBuffer();  //用于存放服务器返回的数据
-					String line;
+					String line="";
 					while( (line=reader.readLine()) != null ){  //读取服务器的数据,一行一行地读
 						response.append(line);
 					}
 					
 					//将服务器返回的数据放到了HttpCallbackListener实例的onFinish()中,java的回调机制会让调用这个方法的类获取到数据
-					if( listener != null ){   
+					if( listener != null ){ 
+						//Looper.prepare();
 						listener.onFinish(response.toString());
 					}
 				} catch(Exception e){
+					e.printStackTrace();
 					//将连接服务器时的错误信息放到HttpCallbackListener的实例的onError()中,
 					//java的回调机制会让调用sendHttpRequest()这个方法的类获取到数据
 					if( listener != null ){

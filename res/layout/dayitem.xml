@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp" >
+    
+    <!-- 日期:号数 -->
+    <TextView 
+        android:id="@+id/day_date_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:textSize="25sp"
+        android:textColor="#FFF"
+        />
+    
+    <!-- 天气类型 -->
+    <TextView 
+        android:id="@+id/weather_type_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/day_date_item"
+        android:layout_marginLeft="30dp"
+        android:textSize="20sp"
+        android:textColor="#FFF"
+        />
+
+    <TextView 
+        android:id="@+id/shuxian"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/weather_type_item"
+        android:layout_centerVertical="true"
+        android:textSize="20sp"
+        android:textColor="#FFF"
+        android:text="|"/>
+    
+    <TextView 
+        android:id="@+id/low_temp_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/shuxian"
+        android:layout_centerVertical="true"
+        android:textSize="20sp"
+        android:textColor="#FFF"/>
+    
+    <TextView 
+        android:id="@+id/wanwan_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/low_temp_item"
+        android:layout_centerVertical="true"
+        android:textSize="20sp"
+        android:textColor="#FFF"
+        android:text="~"/>
+    
+    <TextView 
+        android:id="@+id/high_temp_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/wanwan_item"
+        android:layout_centerVertical="true"
+        android:textSize="20sp"
+        android:textColor="#FFF"/>
+    
+</RelativeLayout>
+

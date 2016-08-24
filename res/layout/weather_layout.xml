@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#27A5F9"
+    android:orientation="vertical" >
+
+    <!-- 城市名称   顶部 -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#484E61" >
+
+        <TextView
+            android:id="@+id/city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#fff"
+            android:textSize="24sp" />
+    </RelativeLayout>
+
+    <!-- 中间的布局 -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/wendu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="当期温度:"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <!-- 当前日期 父控件的右边,右边距和上边距为10 -->
+
+        <TextView
+            android:id="@+id/current_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/weather_info_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wendu"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical" >
+
+            <!-- 当前温度 -->
+
+            <TextView
+                android:id="@+id/current_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="30dp"
+                android:textColor="#FFF"
+                android:textSize="40sp" />
+
+            <!-- 显示风向信息 -->
+
+            <LinearLayout
+                android:id="@+id/fengxiang_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/fengxiang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="风向:"
+                    android:textColor="#FFF"
+                    android:textSize="18sp" />
+
+                <!-- 风向信息 -->
+
+                <TextView
+                    android:id="@+id/wind_direct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="#FFF"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <!-- 显示风力信息 -->
+
+            <LinearLayout
+                android:id="@+id/fengli_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/fengli"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="风力:"
+                    android:textColor="#FFF"
+                    android:textSize="18sp" />
+
+                <!-- 风力信息 -->
+
+                <TextView
+                    android:id="@+id/wind_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="#FFF"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 天气描述 -->
+
+        <TextView
+            android:id="@+id/weather_desp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_below="@id/weather_info_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textColor="#FFF"
+            android:textSize="30sp" />
+
+        <!-- 用于显示温度信息 水平排列   eg: 3°C~8°C -->
+
+        <LinearLayout
+            android:id="@+id/wendu_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_below="@id/weather_desp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <!-- 温度1 -->
+
+            <TextView
+                android:id="@+id/low_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="#FFF"
+                android:textSize="35sp" />
+
+            <!-- ~符号   左右间距是10dp -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="~"
+                android:textColor="#FFF"
+                android:textSize="35sp" />
+
+            <!-- 温度2 -->
+
+            <TextView
+                android:id="@+id/high_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="#FFF"
+                android:textSize="35sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 用于显示明天后天的天气信息 -->
+     <ListView
+         android:id="@+id/weath_listview"
+         android:layout_width="match_parent"
+         android:layout_height="300dp" >
+     </ListView>
+
+</LinearLayout>

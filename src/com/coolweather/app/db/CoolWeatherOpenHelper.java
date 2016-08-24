@@ -50,6 +50,20 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 			"county_code text, " +
 			"city_id integer)";
 	
+	/**
+	 * DayWeather表建表语句   用于显示(3天的天气预报)ListView的子项的
+	 * day_date : 日期:号数
+	 * weather_type : 天气类型
+	 * low_temp : 最低温度
+	 * high_temp : 最高温度
+	 */
+	public static final String CREATE_DAYWEATHER = "create table DayWeather (" +
+			"id integer primary key autoincrement, " +
+			"day_date text, " +
+			"weather_type text, " +
+			"low_temp text, " +
+			"high_temp text)";
+	
 	//构造方法  参数:Context,,数据库名,查询数据的时候返回一个自定义的Cursor(一般传入null),数据库版本号
 	public CoolWeatherOpenHelper(Context context, String name,
 			CursorFactory factory, int version) {
@@ -62,6 +76,7 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_PROVINCE);  //创建Province表
 		db.execSQL(CREATE_CITY);      //创建City表
 		db.execSQL(CREATE_COUNTY);    //创建County表
+		db.execSQL(CREATE_DAYWEATHER);    //创建DayWeather表
 	}
 
 	//更新数据库时调用

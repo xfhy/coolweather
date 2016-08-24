@@ -14,7 +14,10 @@ import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -66,6 +69,16 @@ public class ChooseAreaActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//先读取配置文件
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if(prefs.getBoolean("city_selected", false)){   //如果之前选择过城市,则直接跳过这个活动   直接到显示天气信息的活动
+			Intent intent = new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return ;
+		}
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_ares);
 		titleText = (TextView) findViewById(R.id.title);
@@ -95,6 +108,10 @@ public class ChooseAreaActivity extends Activity {
 					selecCityPosition = position;   //记录当前选择的城市在ListView中的位置
 					//Toast.makeText(ChooseAreaActivity.this, "加载城市信息:"+selecCityPosition, 0).show();
 					queryCounties(); // 加载县级数据
+				} else if(currentLevel == LEVEL_COUNTY){  // 当选中级别是县   则启动显示天气信息的活动
+					 String countyCode = countyList.get(position).getCountyCode();
+					 WeatherActivity.actionStart(ChooseAreaActivity.this, countyCode);  //启动活动的最佳写法
+					 //finish();
 				}
 			}
 
@@ -210,6 +227,12 @@ public class ChooseAreaActivity extends Activity {
 			
 			@Override
 			public void onFinish(String response) {  //response:服务器返回的数据
+				
+				if(response.equals("当前无可用网络")){
+					closeProgressDialog();   //关闭进度对话框
+					return ;
+				}
+				
 				boolean result = false;   //用户判断  下面的解析事件是否成功
 				
 				   /*----------------根据类型去调用相应解析方法--------------*/
@@ -223,8 +246,8 @@ public class ChooseAreaActivity extends Activity {
 				}
 				
 				if(result){  //如果上面的解析成功
-					//通过Activity里面的runOnUiThread()方法回到主线程处理逻辑
-					//runOnUiThread():让指定的UI线程Run起来
+					//通过Activity里面的runOnUiThread()方法回到主线程处理逻辑   实现从子线程切换到主线程.原理基于异步消息处理机制
+					//runOnUiThread():让指定的UI线程Run起来   
 					runOnUiThread(new Runnable(){
 
 						@Override
@@ -287,7 +310,7 @@ public class ChooseAreaActivity extends Activity {
 	 * 捕获Back按键,根据当前的级别来判断,此时应该返回市列表,省列表,还是直接退出
 	 */
 	@Override
-	public void onBackPressed() {
+	public void onBackPressed() {  //重写onBackPressed()方法来覆盖默认Back键的行为
 		if(currentLevel == LEVEL_COUNTY){
 			queryCities();
 		} else if(currentLevel == LEVEL_CITY){

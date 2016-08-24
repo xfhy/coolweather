@@ -28,6 +28,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity 
+            android:name="com.coolweather.app.activity.WeatherActivity"
+            android:label="天气">
+            
+        </activity>
+        
     </application>
 
 </manifest>
