@@ -7,6 +7,7 @@ import com.coolweather.app.R;
 import com.coolweather.app.db.ListViewDB;
 import com.coolweather.app.model.DayWeaAdapter;
 import com.coolweather.app.model.DayWeather;
+import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
@@ -19,7 +20,6 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -119,6 +119,8 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		if(!TextUtils.isEmpty(countyCode)){
 			//有县级代号时就去查询天气
 			currentDateText.setText("同步中...");
+			
+			//在同步的时候下面的这些组件不可见
 			currentTemp.setVisibility(View.INVISIBLE);
 			weatherDespText.setVisibility(View.INVISIBLE);
 			wendu_layout.setVisibility(View.INVISIBLE);
@@ -243,6 +245,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		listview.setVisibility(View.VISIBLE);
 		weatherInfoLayout.setVisibility(View.VISIBLE);   //设置可见
 		cityNameText.setVisibility(View.VISIBLE);
+		
+		   /*---------------启动服务(后台自动更新)-------------------*/
+		Intent intent = new Intent(this,AutoUpdateService.class);
+		startService(intent);
 	}
 
 	/**

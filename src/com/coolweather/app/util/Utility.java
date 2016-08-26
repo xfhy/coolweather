@@ -120,7 +120,7 @@ public class Utility {
 	}
 	
 	/**
-	 * 解析服务器返回的JSON数据,并将解析出来的数据存储到本地
+	 * 解析服务器返回的JSON数据,并将解析出来的数据存储到本地(SharedPreferences文件)
 	 * @param context
 	 * @param response
 	 */
