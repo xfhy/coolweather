@@ -40,13 +40,15 @@ public class HttpUtil {
 			final HttpCallbackListener listener){
 		
 		//首先判断一下当前网络是否可以上网  不可以的话,直接不用执行下面的代码(开启线程连接服务器)了
-		if( !isNetworkAvailable() ){
+		/*if( !isNetworkAvailable() ){
+			Looper.prepare();
 			Toast.makeText(MyApplication.getContext(), "无可用网络", Toast.LENGTH_SHORT).show();
+			Looper.loop();
 			if( listener != null ){
 				listener.onFinish("当前无可用网络");   //将无可用网络的消息传到主线程去
 			}
 			return ;
-		}
+		}*/
 		
 		//启动线程
 		new Thread(new Runnable(){
@@ -72,7 +74,6 @@ public class HttpUtil {
 					
 					//将服务器返回的数据放到了HttpCallbackListener实例的onFinish()中,java的回调机制会让调用这个方法的类获取到数据
 					if( listener != null ){ 
-						//Looper.prepare();
 						listener.onFinish(response.toString());
 					}
 				} catch(Exception e){

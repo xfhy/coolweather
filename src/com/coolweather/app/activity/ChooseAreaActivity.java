@@ -261,70 +261,78 @@ public class ChooseAreaActivity extends Activity {
 		
 		showProgressDialog();  //显示进度对话框
 		
-		//这个sendHttpRequest()方法向服务器发送"GET"请求并获取到返回的数据  通过java回调机制将数据返回回来
-		HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-			/*这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据,这个数据放到
-			*HttpCallbackListener接口的onFinish()参数response中,在这里即可获取到正确的数据
-			*而将错误的信息放到onError()方法中
-			**/
+		//首先判断一下当前网络是否可以上网  不可以的话,直接不用执行开启线程连接服务器了
+		if(HttpUtil.isNetworkAvailable()){
 			
-			@Override
-			public void onFinish(String response) {  //response:服务器返回的数据
+			//这个sendHttpRequest()方法向服务器发送"GET"请求并获取到返回的数据  通过java回调机制将数据返回回来
+			HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+				/*这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据,这个数据放到
+				*HttpCallbackListener接口的onFinish()参数response中,在这里即可获取到正确的数据
+				*而将错误的信息放到onError()方法中
+				**/
 				
-				if(response.equals("当前无可用网络")){
-					closeProgressDialog();   //关闭进度对话框
-					return ;
+				@Override
+				public void onFinish(String response) {  //response:服务器返回的数据
+					
+					if(response.equals("当前无可用网络")){
+						closeProgressDialog();   //关闭进度对话框
+						return ;
+					}
+					
+					boolean result = false;   //用户判断  下面的解析事件是否成功
+					
+					   /*----------------根据类型去调用相应解析方法--------------*/
+					if("province".equals(type)){
+						//解析和处理服务器返回的省级数据(解析出来并存到数据库中)
+						result = Utility.handleProvincesResponse(coolWeatherDB, response);
+					} else if("city".equals(type)){
+						result = Utility.handleCitiesResponse(coolWeatherDB, response, selectedProvince.getId());
+					} else if("county".equals(type)){
+						result = Utility.handleCountiesResponse(coolWeatherDB, response, selectedCity.getId());
+					}
+					
+					if(result){  //如果上面的解析成功
+						//通过Activity里面的runOnUiThread()方法回到主线程处理逻辑   实现从子线程切换到主线程.原理基于异步消息处理机制
+						//runOnUiThread():让指定的UI线程Run起来   
+						runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								closeProgressDialog();   //关闭进度对话框
+								
+								     /*-----------根据类型从数据库加载相应数据,并更新ListView界面----------------*/
+								if("province".equals(type)){
+									queryProvinces();
+								} else if("city".equals(type)){
+									queryCities();
+								} else if("county".equals(type)){
+									queryCounties();
+								}
+							}
+							
+						});
+					}
 				}
 				
-				boolean result = false;   //用户判断  下面的解析事件是否成功
-				
-				   /*----------------根据类型去调用相应解析方法--------------*/
-				if("province".equals(type)){
-					//解析和处理服务器返回的省级数据(解析出来并存到数据库中)
-					result = Utility.handleProvincesResponse(coolWeatherDB, response);
-				} else if("city".equals(type)){
-					result = Utility.handleCitiesResponse(coolWeatherDB, response, selectedProvince.getId());
-				} else if("county".equals(type)){
-					result = Utility.handleCountiesResponse(coolWeatherDB, response, selectedCity.getId());
-				}
-				
-				if(result){  //如果上面的解析成功
-					//通过Activity里面的runOnUiThread()方法回到主线程处理逻辑   实现从子线程切换到主线程.原理基于异步消息处理机制
-					//runOnUiThread():让指定的UI线程Run起来   
+				@Override
+				public void onError(Exception e) {
 					runOnUiThread(new Runnable(){
 
 						@Override
 						public void run() {
 							closeProgressDialog();   //关闭进度对话框
-							
-							     /*-----------根据类型从数据库加载相应数据,并更新ListView界面----------------*/
-							if("province".equals(type)){
-								queryProvinces();
-							} else if("city".equals(type)){
-								queryCities();
-							} else if("county".equals(type)){
-								queryCounties();
-							}
+							Toast.makeText(ChooseAreaActivity.this, "加载失败",
+									Toast.LENGTH_SHORT).show();
 						}
 						
 					});
 				}
-			}
+			});
 			
-			@Override
-			public void onError(Exception e) {
-				runOnUiThread(new Runnable(){
-
-					@Override
-					public void run() {
-						closeProgressDialog();   //关闭进度对话框
-						Toast.makeText(ChooseAreaActivity.this, "加载失败",
-								Toast.LENGTH_SHORT).show();
-					}
-					
-				});
-			}
-		});
+		} else {
+			Toast.makeText(this, "无可用网络", Toast.LENGTH_SHORT).show();
+		}
+		
 		
 	}
 	

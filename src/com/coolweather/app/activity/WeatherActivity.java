@@ -10,6 +10,7 @@ import com.coolweather.app.model.DayWeather;
 import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
+import com.coolweather.app.util.MyApplication;
 import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
@@ -162,61 +163,70 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	 * @param string    类型
 	 */
 	private void queryFromServer(final String address, final String type) {
-		//给服务器发送请求
-		HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-			/*这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据,这个数据放到
-			*HttpCallbackListener接口的onFinish()参数response中,在这里即可获取到正确的数据
-			*而将错误的信息放到onError()方法中
-			**/
+		//判断当前网络是否连接
+		if(HttpUtil.isNetworkAvailable()){
 			
-			@Override
-			public void onFinish(final String response) {
-				//Toast.makeText(getApplicationContext(),
-						//"服务器已将返回的数据通过onFinish()方法返回", Toast.LENGTH_SHORT).show();
-				if("countyCode".equals(type)){   //如果传入的类型是县级代号
-					if(!TextUtils.isEmpty(response)){  //如果服务器返回的数据不为空
-						//从服务器返回的数据中解析出天气代号
-						String[] array = response.split("\\|");
-						if(array != null && array.length == 2){   //服务器的数据是    县级代号|天气代号   县级只有一个信息
-							String weatherCode = array[1];
-							queryWeatherInfo(weatherCode);   //将天气代号传入  查询天气代号所对应的天气
-							SharedPreferences prefs = PreferenceManager.
-									getDefaultSharedPreferences(WeatherActivity.this);
-							Editor editor = prefs.edit();   //得到Editor对象,就可以编辑了
-							editor.putString("weather_code", weatherCode);   //将天气代码保存到SharedPreference文件中
-							editor.commit();    //提交
-						}
-					} 
-				} else if("weatherCode".equals(type)){   //如果传入的是天气代号
-					//处理服务器返回的天气信息              解析服务器返回的JSON数据,并将解析出来的数据存储到本地      
-					Utility.handleWeatherResponse(WeatherActivity.this, response);
-					
-					//现在这里是子线程中,需要更新UI的话需要切换到主线程
+			//给服务器发送请求
+			HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+				/*这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据,这个数据放到
+				*HttpCallbackListener接口的onFinish()参数response中,在这里即可获取到正确的数据
+				*而将错误的信息放到onError()方法中
+				**/
+				
+				@Override
+				public void onFinish(final String response) {
+					//Toast.makeText(getApplicationContext(),
+							//"服务器已将返回的数据通过onFinish()方法返回", Toast.LENGTH_SHORT).show();
+					if("countyCode".equals(type)){   //如果传入的类型是县级代号
+						if(!TextUtils.isEmpty(response)){  //如果服务器返回的数据不为空
+							//从服务器返回的数据中解析出天气代号
+							String[] array = response.split("\\|");
+							if(array != null && array.length == 2){   //服务器的数据是    县级代号|天气代号   县级只有一个信息
+								String weatherCode = array[1];
+								queryWeatherInfo(weatherCode);   //将天气代号传入  查询天气代号所对应的天气
+								SharedPreferences prefs = PreferenceManager.
+										getDefaultSharedPreferences(WeatherActivity.this);
+								Editor editor = prefs.edit();   //得到Editor对象,就可以编辑了
+								editor.putString("weather_code", weatherCode);   //将天气代码保存到SharedPreference文件中
+								editor.commit();    //提交
+							}
+						} 
+					} else if("weatherCode".equals(type)){   //如果传入的是天气代号
+						//处理服务器返回的天气信息              解析服务器返回的JSON数据,并将解析出来的数据存储到本地      
+						Utility.handleWeatherResponse(WeatherActivity.this, response);
+						
+						//现在这里是子线程中,需要更新UI的话需要切换到主线程
+						runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								showWeather();
+							}
+							
+						});
+					}
+				}
+				
+				@Override
+				public void onError(Exception e) {
 					runOnUiThread(new Runnable(){
 
 						@Override
 						public void run() {
-							showWeather();
+							currentDateText.setText("同步失败");
+							Toast.makeText(getApplicationContext(),
+									"请求服务器失败,并返回到了onError()方法中", Toast.LENGTH_SHORT).show();
 						}
 						
 					});
 				}
-			}
-			
-			@Override
-			public void onError(Exception e) {
-				runOnUiThread(new Runnable(){
-
-					@Override
-					public void run() {
-						currentDateText.setText("同步失败");
-						Toast.makeText(getApplicationContext(),
-								"请求服务器失败,并返回到了onError()方法中", Toast.LENGTH_SHORT).show();
-					}
-					
-				});
-			}
-		});
+			});
+		
+		} else {
+			Toast.makeText(MyApplication.getContext(), "无可用网络",
+					Toast.LENGTH_SHORT).show();
+		}
+	 
 	}
 
 	/**
@@ -237,7 +247,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		dayWeatherList = listViewDB.loadDayWeather();    //读取DayWeather数据到ListView中
 		adapter = new DayWeaAdapter(WeatherActivity.this, R.layout.dayitem, dayWeatherList);
 		listview.setAdapter(adapter);
-		//adapter.notifyDataSetChanged();
 		
 		currentTemp.setVisibility(View.VISIBLE);
 		weatherDespText.setVisibility(View.VISIBLE);
@@ -245,6 +254,8 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		listview.setVisibility(View.VISIBLE);
 		weatherInfoLayout.setVisibility(View.VISIBLE);   //设置可见
 		cityNameText.setVisibility(View.VISIBLE);
+		
+		Toast.makeText(this, "加载天气信息成功", Toast.LENGTH_SHORT).show();
 		
 		   /*---------------启动服务(后台自动更新)-------------------*/
 		Intent intent = new Intent(this,AutoUpdateService.class);
@@ -273,13 +284,19 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			finish();   //关闭当前活动
 			break;
 		case R.id.refresh_weather:
-			currentDateText.setText("同步中...");
+			
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			String weatherCode = prefs.getString("weather_code", "");  //获取天气代码
-			if(!TextUtils.isEmpty(weatherCode)){
-				queryWeatherInfo(weatherCode);   //查询天气信息
-				Toast.makeText(this, "更新天气成功", Toast.LENGTH_SHORT).show();
+
+			if (HttpUtil.isNetworkAvailable()) {
+				currentDateText.setText("同步中...");
+				if (!TextUtils.isEmpty(weatherCode)) {
+					queryWeatherInfo(weatherCode); // 查询天气信息
+				}
+			} else {
+				Toast.makeText(this, "亲,请联网后再更新哦~", Toast.LENGTH_SHORT).show();
 			}
+			
 			break;
 		default:
 			break;

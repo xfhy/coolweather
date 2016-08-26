@@ -78,21 +78,26 @@ public class AutoUpdateService extends Service {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String weatherCode = prefs.getString("weather_code","");
 		String address = "http://wthrcdn.etouch.cn/weather_mini?citykey="+weatherCode;
-		HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-			
-			@Override
-			public void onFinish(String response) {
-				//将服务器返回的天气数据交给Utility的handleWeatherResponse()方法去处理
-				//解析服务器返回的JSON数据,并将解析出来的数据存储到本地
-				Utility.handleWeatherResponse(AutoUpdateService.this, response);
-				Log.d("xfhy","开始更新天气");
-			}
-			
-			@Override
-			public void onError(Exception e) {
-				e.printStackTrace();
-			}
-		});
+		
+		//判断一下是否有网络连接
+		if(HttpUtil.isNetworkAvailable()){
+			HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+				
+				@Override
+				public void onFinish(String response) {
+					//将服务器返回的天气数据交给Utility的handleWeatherResponse()方法去处理
+					//解析服务器返回的JSON数据,并将解析出来的数据存储到本地
+					Utility.handleWeatherResponse(AutoUpdateService.this, response);
+					//Log.d("xfhy","开始更新天气");
+				}
+				
+				@Override
+				public void onError(Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+		
 	}
 	
 }
