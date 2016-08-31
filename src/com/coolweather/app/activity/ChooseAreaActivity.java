@@ -8,11 +8,11 @@ import com.coolweather.app.db.CoolWeatherDB;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.County;
 import com.coolweather.app.model.Province;
+import com.coolweather.app.util.BaseActivity;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +37,7 @@ import android.widget.Toast;
  * @author XFHY
  * 
  */
-public class ChooseAreaActivity extends Activity {
+public class ChooseAreaActivity extends BaseActivity {
 
 	public static final int LEVEL_PROVINCE = 0;   //级别     用于判断当前界面是在哪一个级别   省,市,县
 	public static final int LEVEL_CITY = 1;
@@ -261,6 +261,7 @@ public class ChooseAreaActivity extends Activity {
 		
 		showProgressDialog();  //显示进度对话框
 		
+
 		//首先判断一下当前网络是否可以上网  不可以的话,直接不用执行开启线程连接服务器了
 		if(HttpUtil.isNetworkAvailable()){
 			
@@ -331,6 +332,8 @@ public class ChooseAreaActivity extends Activity {
 			
 		} else {
 			Toast.makeText(this, "无可用网络", Toast.LENGTH_SHORT).show();
+			closeProgressDialog();  //关闭对话框
+			titleText.setText("无可用网络~");
 		}
 		
 		

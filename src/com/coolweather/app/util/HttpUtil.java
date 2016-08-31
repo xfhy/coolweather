@@ -8,9 +8,6 @@ import java.net.URL;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.os.Looper;
-import android.util.Log;
-import android.widget.Toast;
 
 
 /**

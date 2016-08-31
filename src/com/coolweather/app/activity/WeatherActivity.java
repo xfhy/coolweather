@@ -8,6 +8,8 @@ import com.coolweather.app.db.ListViewDB;
 import com.coolweather.app.model.DayWeaAdapter;
 import com.coolweather.app.model.DayWeather;
 import com.coolweather.app.service.AutoUpdateService;
+import com.coolweather.app.util.ActivityCollector;
+import com.coolweather.app.util.BaseActivity;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.MyApplication;
@@ -21,6 +23,9 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -38,7 +43,7 @@ import android.widget.Toast;
  * @author XFHY
  * 
  */
-public class WeatherActivity extends Activity implements OnClickListener{
+public class WeatherActivity extends BaseActivity implements OnClickListener{
 	
 	private LinearLayout weatherInfoLayout;
 	private LinearLayout wendu_layout;
@@ -301,6 +306,33 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * 创建菜单
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		//通过getMenuInflater()方法得到MenuInflater对象,再调用它的inflate()方法就可以给当前活动创建菜单
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	/**
+	 * 为菜单设置事件
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.exit_item:  //按下退出键
+			ActivityCollector.finishAll(); //销毁所有活动
+			System.exit(0);  
+			break;
+
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 }

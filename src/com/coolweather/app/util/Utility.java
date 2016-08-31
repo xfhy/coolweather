@@ -147,13 +147,25 @@ public class Utility {
 			
 			/*---------------------读取未来3天的天气信息------------------*/
 			Calendar cal = Calendar.getInstance();         //实例化Calendar对象    用来获取日期
+			Date date=new Date();//取时间
+			
+			
 			ListViewDB listViewDB = new ListViewDB();      //实例化ListViewDB实例
 			listViewDB.deleteAllInfo();    //存储之前先删除数据库中之前剩下的垃圾数据
 			for (int i = 0; i < 3; i++) { 
 				JSONObject tempJsonObject2 = jsonArray.getJSONObject(i);
 				DayWeather dayWeather = new DayWeather();
+				
+				  /*----------------得到今天,明天,后台的日期-------------------*/
+				cal.setTime(date);  //设置当前时间
+				if(i==0){
+					cal.add(Calendar.DATE, 0);   
+				} else if(i==1 || i==2){ 
+					cal.add(Calendar.DATE, 1);  //在原来的时间的基础上再加一天
+				}
+				date = cal.getTime();   //得到时间
 				//获取当前日期号数
-				dayWeather.setDayDate( (cal.get(Calendar.DATE)+i)+"日" );
+				dayWeather.setDayDate( (cal.get(Calendar.DATE))+"日" );
 				dayWeather.setWeatherType(tempJsonObject2.getString("type"));
 				
 				  //服务器返回的温度信息  :   低温24°C   高温32°C    现在只需要后面的24°C即可

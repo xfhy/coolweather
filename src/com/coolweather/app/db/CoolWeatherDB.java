@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.County;
-import com.coolweather.app.model.DayWeather;
 import com.coolweather.app.model.Province;
 
 import android.content.ContentValues;
