@@ -9,18 +9,18 @@
         android:targetSdkVersion="20" />
 
     <!-- 获取当前网络有连接(wifi或数据流量) -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 访问网络的权限 -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
-        android:name="com.coolweather.app.util.MyApplication"
+        android:name=".util.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/cloud2"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.coolweather.app.activity.ChooseAreaActivity"
+            android:name=".activity.ChooseAreaActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,19 +28,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity 
-            android:name="com.coolweather.app.activity.WeatherActivity"
-            android:label="天气">
-            
+        <activity
+            android:name=".activity.WeatherActivity"
+            android:label="天气" >
         </activity>
-        
-        <receiver android:name="com.coolweather.app.receiver.AutoUpdateReceiver">
+
+        <receiver android:name=".receiver.AutoUpdateReceiver" >
         </receiver>
-        
-        <service android:name="com.coolweather.app.service.AutoUpdateService">
+
+        <service android:name="com.coolweather.app.service.AutoUpdateService" >
         </service>
-        
+
+        <activity
+            android:name="com.coolweather.app.activity.SystemSettings"
+            android:label="设置" >
+        </activity>
     </application>
 
 </manifest>

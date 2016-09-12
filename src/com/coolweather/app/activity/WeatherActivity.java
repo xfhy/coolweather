@@ -15,7 +15,6 @@ import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.MyApplication;
 import com.coolweather.app.util.Utility;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +22,6 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -324,15 +322,19 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.system_settings:
+			//System.out.println("设置");
+			Intent sysSetIntnet = new Intent(WeatherActivity.this,SystemSettings.class);
+			startActivity(sysSetIntnet);
+			break;
 		case R.id.exit_item:  //按下退出键
 			ActivityCollector.finishAll(); //销毁所有活动
 			System.exit(0);  
 			break;
-
 		default:
 			break;
 		}
-		return super.onOptionsItemSelected(item);
+		return true;
 	}
 	
 }

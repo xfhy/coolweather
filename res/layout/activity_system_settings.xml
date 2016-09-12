@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setting_back"
+    android:orientation="vertical"
+    tools:context="com.coolweather.app.activity.SystemSettings" >
+
+    <!-- 设置是否更新 -->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/background_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="自动更新天气"
+            android:textColor="#000000"
+            android:textSize="30sp" />
+
+        <ToggleButton
+            android:id="@+id/mTogBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/transparent"
+            android:button="@drawable/toggle_btn"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
+    </RelativeLayout>
+
+    <!-- 更新频率的设置 -->
+    <RelativeLayout
+        android:id="@+id/update_rate_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/update_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="更新频率(小时)"
+            android:textColor="#000000"
+            android:textSize="30sp" />
+        
+        <Spinner
+            android:id="@+id/update_hours"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content" 
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:entries="@array/citys"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
