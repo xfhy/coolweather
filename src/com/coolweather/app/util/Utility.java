@@ -132,7 +132,7 @@ public class Utility {
 			
 			JSONArray jsonArray = data.getJSONArray("forecast");  //取出一个数组类型的东西
 			
-			JSONObject tempJsonObject = jsonArray.getJSONObject(0);   //制度去今天的天气
+			JSONObject tempJsonObject = jsonArray.getJSONObject(0);   //获取今天的天气
 			String windDirect = tempJsonObject.getString("fengxiang");   //风向
 			String windPower = tempJsonObject.getString("fengli");       //风力
 			String highTemp = tempJsonObject.getString("high");          //高温

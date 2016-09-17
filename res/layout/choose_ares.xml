@@ -17,6 +17,15 @@
             android:layout_centerInParent="true"
             android:textColor="#fff"
             android:textSize="24sp" />
+        <!-- 定位按钮 -->
+        <Button 
+            android:id="@+id/location_btn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/location"/>
     </RelativeLayout>
 
     <!-- 省市县的数据就显示到ListView里面 -->
