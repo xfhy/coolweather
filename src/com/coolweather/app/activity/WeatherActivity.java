@@ -1,10 +1,7 @@
 package com.coolweather.app.activity;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.coolweather.app.R;
 import com.coolweather.app.db.ListViewDB;
@@ -15,6 +12,7 @@ import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.BaseActivity;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
+import com.coolweather.app.util.LogUtil;
 import com.coolweather.app.util.MyApplication;
 import com.coolweather.app.util.Utility;
 
@@ -25,7 +23,6 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,18 +134,7 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 			weatherInfoLayout.setVisibility(View.INVISIBLE);
 			cityNameText.setVisibility(View.INVISIBLE);
 			
-			Pattern pattern = Pattern.compile("[0-9]*");
-			Matcher isNum = pattern.matcher(countyCode);
-			if(isNum.matches()){  //判断是否是数字    是数字的话则是用户直接选择的县区,而不是定位来的
-			   queryWeatherCode(countyCode);  //查询县级代号所对应的天气代号
-			} else {
-				try {
-					countyCode = java.net.URLEncoder.encode(countyCode,"utf-8");
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}  
-				queryWeatherInfo(countyCode);  //查询天气代号所对应的天气
-			}
+			queryWeatherCode(countyCode);  //查询县级代号所对应的天气代号
 		} else {
 			//没有县级代号时就直接显示本地天气
 			showWeather();
@@ -172,18 +158,7 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 	 * @param weatherCode   天气代号  
 	 */
 	private void queryWeatherInfo(String weatherCode){
-		Pattern pattern = Pattern.compile("[0-9]*");
-		Matcher isNum = pattern.matcher(weatherCode);
-		String address;
-		if(isNum.matches()){
-			address = "http://wthrcdn.etouch.cn/weather_mini?citykey="+weatherCode;
-		} else {
-			address = "http://wthrcdn.etouch.cn/weather_mini?city="+weatherCode;
-		}
-		//Log.d("xfhy","查询天气代号所对应的天气"+weatherCode);
-		//    http://wthrcdn.etouch.cn/weather_mini?city=%E9%BE%99%E6%B3%89%E9%A9%BF
-		//    http://wthrcdn.etouch.cn/weather_mini?city=%E6%88%90%E9%83%BD
-		//我的  http://wthrcdn.etouch.cn/weather_mini?city=%E9%BE%99%E6%B3%89%E9%A9%BF%E5%8C%BA
+		String address = "http://wthrcdn.etouch.cn/weather_mini?citykey="+weatherCode;
 		queryFromServer(address, "weatherCode");
 	}
 	
@@ -300,7 +275,7 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 	public static void actionStart(Context context,String countyCode){
 		Intent intent = new Intent(context,WeatherActivity.class);
 		intent.putExtra("county_code", countyCode);
-		Log.d("xfhy","countyCode :"+countyCode);
+		LogUtil.d("xfhy","countyCode :"+countyCode);
 		context.startActivity(intent);
 	}
 
@@ -362,6 +337,16 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 			break;
 		}
 		return true;
+	}
+	
+	/**
+	 * 根据天气类型设置背景
+	 */
+	public void setBackGround(){
+		String weather = weatherDespText.getText().toString();
+		if(weather.equals("多云")){
+			
+		}
 	}
 	
 }

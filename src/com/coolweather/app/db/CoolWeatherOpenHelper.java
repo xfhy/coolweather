@@ -22,7 +22,9 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 	public static final String CREATE_PROVINCE = "create table Province (" +
 			"id integer primary key autoincrement, " +
 			"province_name text, " +
-			"province_code text)";
+			"province_code text, " +
+			"unique (province_code), " +
+			"unique (province_name))";
 	
 	/**
 	 * City表建表语句   城市
@@ -35,7 +37,9 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 			"id integer primary key autoincrement, " +
 			"city_name text, " +
 			"city_code text, " +
-			"province_id integer)";
+			"province_id integer, " +
+			"unique (city_name), " +
+			"unique (city_code) )";
 	
 	/**
 	 * County表建表语句  县级
@@ -48,7 +52,9 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
 			"id integer primary key autoincrement, " +
 			"county_name text, " +
 			"county_code text, " +
-			"city_id integer)";
+			"city_id integer, " +
+			"unique (county_name), " +
+			"unique (county_code) )";
 	
 	/**
 	 * DayWeather表建表语句   用于显示(3天的天气预报)ListView的子项的

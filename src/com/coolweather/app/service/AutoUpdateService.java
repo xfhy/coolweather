@@ -4,6 +4,7 @@ import com.coolweather.app.model.Configure;
 import com.coolweather.app.receiver.AutoUpdateReceiver;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
+import com.coolweather.app.util.LogUtil;
 import com.coolweather.app.util.Utility;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,7 +14,6 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * 2016年8月26日19:50:59
@@ -50,7 +50,7 @@ public class AutoUpdateService extends Service {
 
 				@Override
 				public void run() {
-					Log.d("xfhy", "开始更新天气");
+					LogUtil.d("xfhy", "开始更新天气");
 					updateWeather();   //开始更新天气
 				}
 

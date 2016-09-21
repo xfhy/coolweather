@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.coolweather.app.db.CoolWeatherDB;
 import com.coolweather.app.db.ListViewDB;
@@ -73,6 +72,7 @@ public class Utility {
 	public static boolean handleCitiesResponse(CoolWeatherDB coolWeatherDB,
 			String response,int provinceId){
 		if(!TextUtils.isEmpty(response)){   //TextUtils.isEmpty()当字符串为null或者长度为0时返回true
+			LogUtil.d("response","服务器返回的城市数据 -> "+response);
 			String[] allCities = response.split(",");     //城市之间的间隔是逗号,这里将所有的城市取出来封装成一个数组
 			if( allCities != null && allCities.length > 0 ){
 				for(String c : allCities){   //将每个元素取出来(一个元素就是一个城市的代号与名称)
@@ -120,7 +120,7 @@ public class Utility {
 	}
 	
 	/**
-	 * 解析服务器返回的JSON数据,并将解析出来的数据存储到本地(SharedPreferences文件)
+	 * 解析服务器返回的天气JSON数据,并将解析出来的数据存储到本地(SharedPreferences文件)
 	 * @param context
 	 * @param response
 	 */
@@ -182,7 +182,7 @@ public class Utility {
 				listViewDB.saveDayWeather(dayWeather);   // 将DayWeather实例存储到数据库
 			}
 			String cityName = data.getString("city");    //获取当前城市名
-			Log.d("xfhy",cityName);
+			LogUtil.d("xfhy",cityName);
 			
 			saveWeatherInfo(context, cityName, currentTemp, windDirect, windPower, highTemp, weatherDesp, lowTemp);
 		} catch (Exception e) {
@@ -220,7 +220,5 @@ public class Utility {
 		editor.putString("current_date", sdf.format(new Date()));    //当前日期
 		editor.commit();   //提交
 	}
-	
-	
 	
 }

@@ -2,10 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/setting_back"
+    android:background="@drawable/setting_back2"
     android:orientation="vertical"
     tools:context="com.coolweather.app.activity.SystemSettings" >
 
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <Button 
+            android:id="@+id/back_to_chooseweather"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/back_to"/>
+    </RelativeLayout>
+    
     <!-- 设置是否更新 -->
     <RelativeLayout
         android:layout_width="fill_parent"

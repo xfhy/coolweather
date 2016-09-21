@@ -6,8 +6,11 @@ import com.coolweather.app.model.Configure;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
@@ -22,6 +25,7 @@ import android.widget.ToggleButton;
  */
 public class SystemSettings extends Activity {
 
+	private Button back_to_chooseweather;
 	/**
 	 * 配置是否更新天气
 	 */
@@ -32,14 +36,16 @@ public class SystemSettings extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_system_settings);
 		
 		/*初始化控件*/
+		back_to_chooseweather = (Button)findViewById(R.id.back_to_chooseweather);
 		weatherToUpdate = (ToggleButton)findViewById(R.id.mTogBtn);
 		update_rate_layout = (RelativeLayout)findViewById(R.id.update_rate_layout);
 		spinner_hours = (Spinner)findViewById(R.id.update_hours);
 		
-		
+		back_to_chooseweather.setOnClickListener(new BackToChooseListener());
 		
 		//获取SharedPreferences文件中是否需要更新   再将值设置到ToggleButton中
 		if(Configure.getWhetherToUpdate()){
@@ -121,6 +127,21 @@ public class SystemSettings extends Activity {
 				
 			}
 		});
+		
+	}
+	
+	/**
+	 * 返回按钮监听器
+	 * Sep 21, 2016 8:30:41 PM
+	 * @author XFHY
+	 *
+	 */
+	class BackToChooseListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			finish();
+		}
 		
 	}
 	

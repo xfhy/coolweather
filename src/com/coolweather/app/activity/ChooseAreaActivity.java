@@ -7,12 +7,13 @@ import com.coolweather.app.R;
 import com.coolweather.app.db.CoolWeatherDB;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.County;
+import com.coolweather.app.model.Position;
 import com.coolweather.app.model.Province;
 import com.coolweather.app.util.BaseActivity;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.LocationYourPosition;
-import com.coolweather.app.util.MyApplication;
+import com.coolweather.app.util.LogUtil;
 import com.coolweather.app.util.Utility;
 
 import android.app.ProgressDialog;
@@ -22,7 +23,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -33,7 +33,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import net.youmi.android.AdManager;
 
 /**
  * 2016年8月21日11:19:53
@@ -61,6 +60,10 @@ public class ChooseAreaActivity extends BaseActivity {
 	 * 标题
 	 */
 	private TextView titleText;
+	/**
+	 * 用于设置的Button
+	 */
+	private Button settingBtn;
 	/**
 	 * 用于定位的Button
 	 */
@@ -129,8 +132,8 @@ public class ChooseAreaActivity extends BaseActivity {
 		 * false） isEnableYoumiLog: 是否开启有米的Log输出，默认为开启状态
 		 * 上传到有米主站进行审核时，务必开启有米的Log，这样才能保证通过审核 开发者发布apk到各大市场的时候，强烈建议关闭有米的Log
 		 */
-		AdManager.getInstance(getBaseContext()).init("89a962f77ebf6c0c",
-				"7fab8966d2360133", false, true);
+		//AdManager.getInstance(getBaseContext()).init("89a962f77ebf6c0c",
+				//"7fab8966d2360133", false, true);
 		
 		//首先判断是否是从WeatherActivity跳转过来的   默认值是false
 		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
@@ -148,10 +151,12 @@ public class ChooseAreaActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);   //设置全屏
 		setContentView(R.layout.choose_ares);
 		
+		settingBtn = (Button)findViewById(R.id.setting);
 		titleText = (TextView) findViewById(R.id.title);
 		locationBtn = (Button)findViewById(R.id.location_btn);
 		listView = (ListView) findViewById(R.id.list_view);
 
+		settingBtn.setOnClickListener(new SettingListener());
 		locationBtn.setOnClickListener(new LocationMyPositionListener());  //设置定位按钮监听器
 		
 		// 设置ListView适配器,数据为dataList集合提供
@@ -171,17 +176,15 @@ public class ChooseAreaActivity extends BaseActivity {
 				if (currentLevel == LEVEL_PROVINCE) { // 当前选中的级别是省级 则加载该省城市数据
 					selectedProvince = provinceList.get(position); // 获取选中的省份
 					selecProvinPosition = position;  //记录当前选择的省份在ListView中的位置
-					//Toast.makeText(ChooseAreaActivity.this, "加载省级信息:"+selecProvinPosition, 0).show();
 					queryCities(); // 加载城市数据
 				} else if (currentLevel == LEVEL_CITY) { // 当选中级别是城市 则加载该城市县级数据
 					selectedCity = cityList.get(position); // 获取选中的城市
 					selecCityPosition = position;   //记录当前选择的城市在ListView中的位置
-					//Toast.makeText(ChooseAreaActivity.this, "加载城市信息:"+selecCityPosition, 0).show();
 					queryCounties(); // 加载县级数据
 				} else if(currentLevel == LEVEL_COUNTY){  // 当选中级别是县   则启动显示天气信息的活动
 					 String countyCode = countyList.get(position).getCountyCode();
 					 WeatherActivity.actionStart(ChooseAreaActivity.this, countyCode);  //启动活动的最佳写法
-					 //finish();
+					 LocationYourPosition.onDestroy();   //关闭位置监听器
 				}
 			}
 
@@ -191,7 +194,29 @@ public class ChooseAreaActivity extends BaseActivity {
 		
 	}
 
-	//定位按钮监听器
+	/**
+	 * 设置菜单监听器
+	 * Sep 21, 2016 8:07:13 PM
+	 * @author XFHY
+	 *
+	 */
+	class SettingListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			Intent sysSetIntnet = new Intent(ChooseAreaActivity.this,SystemSettings.class);
+			startActivity(sysSetIntnet);
+			LocationYourPosition.onDestroy();
+		}
+		
+	}
+	
+	/**
+	 * 定位按钮监听器
+	 * Sep 21, 2016 8:04:46 PM
+	 * @author XFHY
+	 *
+	 */
 	class LocationMyPositionListener implements OnClickListener{
 
 		@Override
@@ -201,20 +226,22 @@ public class ChooseAreaActivity extends BaseActivity {
 				
 				@Override
 				public void onFinish(String response) {
-					String myDir = null;
-					myDir = LocationYourPosition.getDistrict(response);
-					if( myDir != null ){
-						WeatherActivity.actionStart(ChooseAreaActivity.this, myDir);
-						Log.d("xfhy","myDir  ->   "+myDir);
+					//获取当前的省名,城市名,区县名 放到Location类里面 解析服务器返回的json数据
+					LocationYourPosition.getDistrict(response);
+					if( Position.getCounty() != null ){
+						//WeatherActivity.actionStart(ChooseAreaActivity.this, myDir);
+						LogUtil.d("position","ChooseAreaActivity 当前县区  ->   "+Position.getCounty());
+						saveCitiesId();
+						
 					}
 				}
 				
 				@Override
 				public void onError(Exception e) {
-					Toast.makeText(MyApplication.getContext(), "获取当前位置", Toast.LENGTH_LONG).show();
+					//Toast.makeText(MyApplication.getContext(), "获取当前位置失败~", Toast.LENGTH_LONG).show();
 				}
+				
 			});
-			
 			
 		}
 	}
@@ -438,7 +465,7 @@ public class ChooseAreaActivity extends BaseActivity {
 				Intent intent = new Intent(this, WeatherActivity.class);
 				startActivity(intent);
 			}
-			myPosition.onDestroy();   //关闭位置监听器
+			LocationYourPosition.onDestroy();   //关闭位置监听器
 			finish();  //关闭当前Activity
 		}
 	}
@@ -457,4 +484,93 @@ public class ChooseAreaActivity extends BaseActivity {
 		context.startActivity(intent);
 	}
 
+	/**
+	 * 解析当前位置信息,并放到SQLite中
+	 */
+	public void saveCitiesId() {
+		/*
+		 * 思路:根据当前已经获取到的省份名字,通过数据库将当前的省级的id找到,放到
+		 * provinceId中,根据这个id查找该所有的城市id(需要存到数据库中),放到cityIdList中,
+		 * 再根据当前城市名称找到当前城市id,根据这个id查找所有的县区id(需要存入数据库),根据当前县区名称查找当前县区id
+		 */
+		
+		//根据省份名从数据库查询该省份id
+		coolWeatherDB.provinceNameToId(Position.getProvince());
+		
+		    /*---------------将当前省份的所有城市信息加载到数据库--------------------------------*/
+		String cityAddress = "http://www.weather.com.cn/data/list3/city"
+				+ Position.getProvinceId() + ".xml";
+		// 首先判断一下当前网络是否可以上网 不可以的话,直接不用执行开启线程连接服务器了
+		if (HttpUtil.isNetworkAvailable()) {
+
+			// 这个sendHttpRequest()方法向服务器发送"GET"请求并获取到返回的数据 通过java回调机制将数据返回回来
+			HttpUtil.sendHttpRequest(cityAddress, new HttpCallbackListener() {
+				/*
+				 * 这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据, 这个数据放到
+				 * HttpCallbackListener接口的onFinish()参数response中, 在这里即可获取到正确的数据
+				 * 而将错误的信息放到onError()方法中
+				 */
+
+				@Override
+				public void onFinish(String response) { // response:服务器返回的数据
+
+					if (response.equals("当前无可用网络")) {
+						return;
+					}
+					// 解析和处理服务器返回的市级数据
+					Utility.handleCitiesResponse(coolWeatherDB, response,
+							Integer.parseInt(Position.getProvinceId()));
+					
+					//根据城市名从数据库查询该城市id,将这个id保存到Position中
+					coolWeatherDB.cityNameToId(Position.getCity());
+					
+					/*-----------------将当前城市的所有县区信息加载到数据库------------------------------------------------*/
+					String countyAddress = "http://www.weather.com.cn/data/list3/city"
+							+ Position.getCityId() + ".xml";
+					// 首先判断一下当前网络是否可以上网 不可以的话,直接不用执行开启线程连接服务器了
+					if (HttpUtil.isNetworkAvailable()) {
+
+						// 这个sendHttpRequest()方法向服务器发送"GET"请求并获取到返回的数据 通过java回调机制将数据返回回来
+						HttpUtil.sendHttpRequest(countyAddress, new HttpCallbackListener() {
+							/*
+							 * 这里用到了java的回调机制,sendHttpRequest()方法里面开启线程并接收服务器返回的数据 , 这个数据放到
+							 * HttpCallbackListener接口的onFinish()参数response中, 在这里即可获取到正确的数据
+							 * 而将错误的信息放到onError()方法中
+							 */
+
+							@Override
+							public void onFinish(String response) { // response:服务器返回的数据
+
+								if (response.equals("当前无可用网络")) {
+									return;
+								}
+								//解析和处理服务器返回的县级数据
+								Utility.handleCountiesResponse(coolWeatherDB, response,
+										Integer.parseInt(Position.getCityId()));
+								
+								//根据县区名从数据库查询该县区id,将这个id保存到Position中
+								coolWeatherDB.countyNameToId(Position.getCounty());
+								LocationYourPosition.onDestroy();//定位完成  关闭位置监听器
+								WeatherActivity.actionStart(ChooseAreaActivity.this, Position.getCountyId());
+							}
+
+							@Override
+							public void onError(Exception e) {
+								e.printStackTrace();
+							}
+						});
+					}
+					
+				}
+
+				@Override
+				public void onError(Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+	
+	}
+
+	
 }

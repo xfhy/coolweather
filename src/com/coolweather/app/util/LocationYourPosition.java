@@ -9,12 +9,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import com.coolweather.app.model.Position;
+
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -84,7 +85,9 @@ public class LocationYourPosition {
 			longitude = String.valueOf(location.getLongitude());
 			showLocation(location);
 		} else {
-			Toast.makeText(MyApplication.getContext(), "亲,定位失败~请到开阔的地方",
+			/*Toast.makeText(MyApplication.getContext(), "亲,定位失败~请到开阔的地方",
+					Toast.LENGTH_LONG).show();*/
+			Toast.makeText(MyApplication.getContext(), "亲,定位中~~\n请到开阔地方地位哦",
 					Toast.LENGTH_LONG).show();
 		}
 
@@ -99,13 +102,10 @@ public class LocationYourPosition {
 		// 当位置发生改变时
 		@Override
 		public void onLocationChanged(Location location) {
-			Toast.makeText(MyApplication.getContext(), "亲,位置已经变化啦",
-					Toast.LENGTH_LONG).show();
 			latitude = String.valueOf(location.getLatitude());
 			longitude = String.valueOf(location.getLongitude());
 			// 自己写的方法,显示当前位置
 			showLocation(location);
-			//getDistrict();
 		}
 
 		@Override
@@ -133,9 +133,7 @@ public class LocationYourPosition {
 	private static void showLocation(Location location) {
 		String currentPosition = "当前的位置是  纬度:" + location.getLatitude() + "\n"
 				+ "经度:" + location.getLongitude();
-		//Log.d("xfhy", "纬度:" + location.getLatitude());
-		//Log.d("xfhy", "经度:" + location.getLongitude());
-		Toast.makeText(MyApplication.getContext(), currentPosition,
+		Toast.makeText(MyApplication.getContext(), "定位成功 "+currentPosition,
 				Toast.LENGTH_SHORT).show();
 	}
 
@@ -150,30 +148,33 @@ public class LocationYourPosition {
 	}
 
 	/**
-	 * 获取当前的区县名     解析服务器返回的json数据
+	 * 获取当前的省名,城市名,区县名  放到Location类里面    解析服务器返回的json数据
 	 * @return 
 	 */
-	public static String getDistrict(String reallyResultData) {
-		Log.d("xfhy","getDistrict()");
-		String district  = null;
+	public static void getDistrict(String reallyResultData) {
+		String province = null;        //当前省份
+ 		String city = null;            //当前城市
+		String district  = null;       //当前县区
 		//原始返回的数据中有renderReverse&&renderReverse(....)   需要将外面的杂质其去掉
 		try {
 			int indexOfSmall1 = reallyResultData.indexOf("(");
 			int indexOfSmall2 = reallyResultData.lastIndexOf(")");
-			Log.d("xfhy","indexOfSmall1 :"+indexOfSmall1);
-			Log.d("xfhy","indexOfSmall2 :"+indexOfSmall2);
+			LogUtil.d("xfhy","indexOfSmall1 :"+indexOfSmall1);
+			LogUtil.d("xfhy","indexOfSmall2 :"+indexOfSmall2);
 			reallyResultData = reallyResultData.substring(indexOfSmall1+1, indexOfSmall2);
-			Log.d("xfhy","reallyResultData :"+reallyResultData);
 			JSONObject jsonObject = new JSONObject(reallyResultData);
 			JSONObject jsonResult = jsonObject.getJSONObject("result");
 			JSONObject jsonAddressComponent = jsonResult.getJSONObject("addressComponent");
-			district = jsonAddressComponent.getString("district");
-			
+			province = jsonAddressComponent.getString("province");    //获取当前省份名称
+			city = jsonAddressComponent.getString("city");            //获取当前城市名称
+			district = jsonAddressComponent.getString("district");    //获取当前县区名称
+			Position.setProvince(province);
+			Position.setCity(city);
+			Position.setCounty(district);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Log.d("xfhy","县区 : "+district);
-		return district;
+		LogUtil.d("position","当前位置:"+province+" "+city+" "+district);
 	}
 	
 	/**
@@ -189,7 +190,7 @@ public class LocationYourPosition {
 		 * callback=renderReverse& location=39.983424,116.322987& output=json&
 		 * pois=1
 		 */
-		//这是
+		//这是获取当前位置的url    通过经纬度获取当前位置
 		final String httpUrl = "http://api.map.baidu.com/geocoder/v2/?"
 				+ "ak=IOOZbu8un3e9laZTXCtYqoAOoZHdMft4&"
 				+ "mcode=1A:2C:32:7E:1B:9C:16:63:B5:F3:7A:AB:03:E3:62:0B:BF:05:F6:6E;com.coolweather.app.util&"
@@ -217,7 +218,7 @@ public class LocationYourPosition {
 					while( (line=reader.readLine()) != null ){  //读取服务器的数据,一行一行地读
 						resultData.append(line);
 					}
-					Log.d("xfhy","resultData :"+resultData.toString());
+					//Log.d("xfhy","resultData :"+resultData.toString());
 					
 					//将服务器返回的数据放到了HttpCallbackListener实例的onFinish()中,java的回调机制会让调用这个方法的类获取到数据
 					if(listener != null){

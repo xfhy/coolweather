@@ -2,7 +2,6 @@ package com.coolweather.app.util;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 
 /**
  * 2016年8月28日10:38:07
@@ -17,7 +16,7 @@ public class BaseActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Log.d("xfhy",getClass().getSimpleName());  //打印当前活动的名称
+		LogUtil.d("xfhy",getClass().getSimpleName());  //打印当前活动的名称
 		//添加这个活动到活动管理器
 		ActivityCollector.addActivity(this);  
 	}

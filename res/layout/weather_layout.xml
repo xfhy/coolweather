@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#27A5F9"
+    android:background="@drawable/duoyun"
     android:orientation="vertical" >
 
-    <!-- 城市名称   顶部 -->
+    <!-- 城市名称   顶部 android:background="#484E61"-->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#484E61" >
+         >
 
         <!-- 切换城市  主页键 -->
         <Button 
