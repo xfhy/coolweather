@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import net.youmi.android.AdManager;
 
 /**
  * 2016年8月21日11:19:53
@@ -132,8 +133,8 @@ public class ChooseAreaActivity extends BaseActivity {
 		 * false） isEnableYoumiLog: 是否开启有米的Log输出，默认为开启状态
 		 * 上传到有米主站进行审核时，务必开启有米的Log，这样才能保证通过审核 开发者发布apk到各大市场的时候，强烈建议关闭有米的Log
 		 */
-		//AdManager.getInstance(getBaseContext()).init("89a962f77ebf6c0c",
-				//"7fab8966d2360133", false, true);
+		AdManager.getInstance(getBaseContext()).init("89a962f77ebf6c0c",
+				"7fab8966d2360133", false, true);
 		
 		//首先判断是否是从WeatherActivity跳转过来的   默认值是false
 		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);

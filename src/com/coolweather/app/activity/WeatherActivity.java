@@ -47,6 +47,10 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 	private LinearLayout weatherInfoLayout;
 	private LinearLayout wendu_layout;
 	/**
+	 * 这个Activity的主LinearLayout
+	 */
+	private LinearLayout weather_main_layout;
+	/**
 	 * 切换城市按钮
 	 */
 	private Button switchCity;
@@ -100,6 +104,7 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 		setContentView(R.layout.weather_layout);
 		
 		//初始化各控件
+		weather_main_layout = (LinearLayout)findViewById(R.id.weather_main_layout);
 		weatherInfoLayout = (LinearLayout)findViewById(R.id.weather_info_layout);
 		wendu_layout = (LinearLayout)findViewById(R.id.wendu_layout);
 		switchCity = (Button)findViewById(R.id.switch_city);
@@ -138,6 +143,9 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 		} else {
 			//没有县级代号时就直接显示本地天气
 			showWeather();
+			
+			//更换背景
+			setBackgroundResource();
 		}
 		
 		//实例化广告条
@@ -206,6 +214,9 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 							@Override
 							public void run() {
 								showWeather();
+								
+								//更换背景
+								setBackgroundResource();
 							}
 							
 						});
@@ -346,6 +357,30 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 		String weather = weatherDespText.getText().toString();
 		if(weather.equals("多云")){
 			
+		}
+	}
+	
+	/**
+	 * 设置天气背景
+	 */
+	public void setBackgroundResource(){
+		String weatherType = weatherDespText.getText().toString();
+		if(weatherType.contains("晴")){
+			weather_main_layout.setBackgroundResource(R.drawable.zhongyu);
+		} else if(weatherType.contains("多云")){
+			weather_main_layout.setBackgroundResource(R.drawable.baoxue);
+		} else if(weatherType.contains("小雨")){
+			weather_main_layout.setBackgroundResource(R.drawable.baoyu);
+		} else if(weatherType.contains("中雨")){
+			weather_main_layout.setBackgroundResource(R.drawable.dabaoyu);
+		} else if(weatherType.contains("大雨")){
+			weather_main_layout.setBackgroundResource(R.drawable.dayu);
+		} else if(weatherType.contains("大雪")){
+			weather_main_layout.setBackgroundResource(R.drawable.daxue);
+		} else if(weatherType.contains("阵雨")){
+			weather_main_layout.setBackgroundResource(R.drawable.duoyun);
+		} else {
+			weather_main_layout.setBackgroundResource(R.drawable.zhongyu);
 		}
 	}
 	
